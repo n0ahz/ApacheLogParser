@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'ApacheLog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'logs.db'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'logs',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
