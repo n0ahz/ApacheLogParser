@@ -7,7 +7,7 @@ class LogFormatForm(forms.ModelForm):
     class Meta:
         model = LogFormats
         fields = [
-            "site_name",
+            "site",
             "log_format",
         ]
         widgets = {

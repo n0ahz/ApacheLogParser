@@ -6,15 +6,15 @@
   <table class="table table-bordered table-striped table-hover">
    <tr>
         <td><strong>SN</strong></td>
-        <td><strong>Format Names</strong></td>
+        <td><strong>Site Names</strong></td>
         <td><strong>Log Formats</strong></td>
         <td><strong>Action</strong></td>
    </tr>
 
-      {% for ob in logFormateList %}
+      {% for ob in log_list %}
         <tr>
             <td>{{forloop.counter}}</td>
-            <td>{{ob.site_name}}</td>
+            <td>{{ob.site.site_name}}</td>
             <td>{{ob.log_format}}</td>
             <td>
                 <a href="{% url 'logformat_edit' ob.id %}"><button type="button" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></button></a>
