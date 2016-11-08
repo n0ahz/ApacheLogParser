@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+
 </head>
 <body>
 
@@ -26,8 +26,8 @@
           <a class="dropdown-toggle" data-toggle="dropdown" href="#">Site
           <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Add Site</a></li>
-            <li><a href="#">List Of Sites</a></li>
+            <li><a href="{% url 'site_add' %}">Add Site</a></li>
+            <li><a href="{% url 'site_list' %}">List Of Sites</a></li>
           </ul>
         </li>
           <li class="dropdown">
