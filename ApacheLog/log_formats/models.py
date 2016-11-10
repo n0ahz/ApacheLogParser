@@ -6,7 +6,7 @@ from sites.models import Site
 
 class LogFormats(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    log_format = models.TextField(max_length=100)
+    log_format = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return self.log_format
+        return self.site

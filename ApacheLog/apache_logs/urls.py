@@ -1,8 +1,9 @@
 from django.conf.urls import url
-from .views import apachelogs_list_page,apachelogs_uploads,logparser
+from .views import create,parseLog
+
 
 urlpatterns = [
-    url(r'^upload/$', apachelogs_uploads , name='apachelog_upload'),
-    url(r'^list/$', apachelogs_list_page, name='apachelog_list'),
-    url(r'^parse/$', logparser , name='apachelog_parse'),
+    url(r'^uploadlog/$', create, name='uploadlog'),
+    url(r'^parse/$', parseLog, name='parse'),
+
 ]
