@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import LogFormats
 from .forms import LogFormatForm
+from django.db.models import Q
 from sites.models import Site
 # Create your views here.
 
@@ -21,6 +22,12 @@ def logformat_add_page(request):
 
 def logformat_list_page(request):
     log_list = LogFormats.objects.order_by("-id")
+
+    # for search
+    query = request.GET.get('q')
+    if query:
+        log_list = log_list.filter(Q(site__site_name__startswith=query))
+
     context = {
         "log_list": log_list,
         "title": "List of Logformat",
