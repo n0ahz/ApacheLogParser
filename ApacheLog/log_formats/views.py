@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import LogFormats
 from .forms import LogFormatForm
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from sites.models import Site
 # Create your views here.
 
@@ -28,6 +29,17 @@ def logformat_list_page(request):
     if query:
         log_list = log_list.filter(Q(site__site_name__startswith=query))
 
+    # pagination
+    paginator = Paginator(log_list, 20) # Show 30 logs per page
+    page = request.GET.get('page')
+    try:
+        log_list = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        log_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        log_list = paginator.page(paginator.num_pages)
     context = {
         "log_list": log_list,
         "title": "List of Logformat",
