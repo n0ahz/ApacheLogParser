@@ -1,2 +1,3 @@
 django
-xlrd
+xlwt
+apache-log-parser
