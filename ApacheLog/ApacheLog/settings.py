@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'log_formats',
     'sites',
+    'apache_logs'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
