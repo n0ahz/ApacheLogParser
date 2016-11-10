@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div id="content" xmlns="http://www.w3.org/1999/html">
+
+        <div class="panel panel-success">
+
+            <div class="panel-body">
+                <h1>ApacheLogParser</h1>
+            </div>
+
+            <div class="panel-footer">
+
+                <form action="{% url 'parse' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4 form-group" >
+                            <label for="site_drop">Select Site</label>
+                            <select id="site_drop" class="form-control" name="site_id">
+                                {% for site in sites  %}
+                                    <option value="{{ site.id }}">{{ site.site_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="file_up">Select Log File</label>
+                            <input type="file" name="ufile" class="form-control" id="file_up">
+                            </br>
+                            <button type="submit" class="btn btn-save"> Parse </button>
+                        </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
