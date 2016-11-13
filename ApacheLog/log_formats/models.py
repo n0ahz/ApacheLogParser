@@ -9,4 +9,4 @@ class LogFormats(models.Model):
     log_format = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return self.site
+        return self.log_format
