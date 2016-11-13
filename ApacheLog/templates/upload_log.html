@@ -20,11 +20,8 @@
 
                 <fieldset>
                     <legend>Select Log:</legend>
-                    <form name="myform" action="http://www.mydomain.com/myformhandler.cgi" method="POST">
                         <div class='log-format-list' align="left">
-
                         </div>
-                    </form>
                 </fieldset>
 
                 <label for="file_up">Select Log File</label>
@@ -49,7 +46,7 @@
 
                         for(var i = 0; i<data.length; i++) {
                             btnHtml+=   '<div class="radio">'+
-                                    '<label><input type="radio" name="log_format">'+data[i].log_format+'</label>'+
+                                    '<label><input type="radio" name="log_format_id" value="'+ data[i].id +'">'+ data[i].log_format +'</label>'+
                                     '</div>';
                         }
                         $('.log-format-list').html(btnHtml);

@@ -19,18 +19,20 @@ def create(request):
     return render(request, 'upload_log.html', {'sites':siteList})
 
 def parseLog(request):
-    siteId = int(request.POST.get('site_id'))
-    log_formatObg = LogFormats.objects.filter(site_id=siteId)
+    logFormatId = int(request.POST.get('log_format_id'))
+    log_formatObg = LogFormats.objects.filter(id=logFormatId)
     logFormat = str(log_formatObg[0].log_format)
-
+    print logFormat
+    print logFormatId
     #% h % l % u % t \"%r\" %>s %b
+    #%h %A - - %t \"%r\" %>s %b \"%{User-Agent}i\"
     #print logFormat
     line_parser = apache_log_parser.make_parser(""+logFormat)
 
     fileitem=request.FILES.get('ufile')
     flag = True
     # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
-    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (status,request_first_line,response_bytes_clf,remote_host,request_http_ver,request_url_port,remote_logname,request_method,site_id) VALUES "
+    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,request_method,format_id) VALUES "
     for line in fileitem.file:
         if(flag == True):
             strQuery += ' ('
@@ -39,11 +41,16 @@ def parseLog(request):
 
         try:
             data=line_parser(line.strip())
+            #pprint(data)
+            #break
         except apache_log_parser.LineDoesntMatchException:
             return HttpResponse("Formet Doesnt Match ......!")
 
-        strQuery+='"'+str(data.get('status'))+'","'+str(data.get('request_first_line'))+'","'+str(data.get('response_bytes_clf'))+'","'+str(data.get('remote_host'))+'","';
-        strQuery+=str(data.get('request_http_ver'))+'","'+str(data.get('request_url_port'))+'","'+str(data.get('remote_logname'))+'","'+str(data.get('request_method'))+'",'+ str(siteId) +')';
+        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received_tz_isoformat'))+'","'
+        strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
+        strQuery+=str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +')'
+        # if(flag == True):
+        #     print  strQuery
         flag = False
 
         #orm query
@@ -60,13 +67,15 @@ def parseLog(request):
     return HttpResponseRedirect('/log/loglist')
 
 def log_list(request):
-    last_site_id = ApacheLog.objects.all().last()
-    #print last_site_id[0].site_id
-    logs = list(ApacheLog.objects.filter(site_id=last_site_id).order_by('id')[:25])
-    #site_id=logs[0]
+    last_obj = ApacheLog.objects.order_by('-id').first()
+    last_id = last_obj.format_id
 
+    #print last_site_id[0].site_id
+    logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:25])
+    #site_id=logs[0]
+    #print logs
     # pagination
-    paginator = Paginator(ApacheLog.objects.all(), 20) # Show 20 logs per page
+    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 25) # Show 25 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)
