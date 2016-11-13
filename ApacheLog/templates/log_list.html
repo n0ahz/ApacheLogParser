@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    <div class="container" style="margin-top: 15px;">
+        <!-- Table -->
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <td><strong>SN</strong></td>
+                <td><strong>Site Names</strong></td>
+                <td><strong>URL</strong></td>
+                <td><strong>Http Method</strong></td>
+                <td><strong>Receive Datetime</strong></td>
+                <td><strong>Http Response</strong></td>
+                <td><strong>Response Time(ms)</strong></td>
+            </tr>
+
+            {% for ob in logs %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+
+                </tr>
+            {% endfor %}
+
+        </table>
+
+        <div>
+            <nav>
+                <ul class="pager">
+                    <li class="previous">{% if logs.has_previous %}
+                        <a href="?page={{ logs.previous_page_number }}"><span aria-hidden="true">&larr;</span> Previous</a>
+                    {% endif %}
+                    </li>
+
+                    <li class="next">{% if logs.has_next %}
+                        <a href="?page={{ logs.next_page_number }}">
+                            Next <span aria-hidden="true">&rarr;</span></a>{% endif %}</li>
+                </ul>
+            </nav>
+            <hr>
+
+        </div>
+
+    </div>
+{% endblock %}

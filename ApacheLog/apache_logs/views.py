@@ -1,14 +1,13 @@
 from django.shortcuts import render
-#import apache_log_parser
 from pprint import pprint
 from .models import ApacheLog,Site
 from log_formats.models import LogFormats
 import datetime
 from django.http import HttpResponse, HttpResponseRedirect
-
-#from django.db import connection
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection
 import apache_log_parser
+
 def create(request):
     siteObj = Site.objects.order_by("-id")
     siteList = list(siteObj)
@@ -20,9 +19,8 @@ def parseLog(request):
     logFormat = str(log_formatObg[0].log_format)
 
     #% h % l % u % t \"%r\" %>s %b
-    print logFormat
+    #print logFormat
     line_parser = apache_log_parser.make_parser(""+logFormat)
-
 
     fileitem=request.FILES.get('ufile')
     flag = True
@@ -36,8 +34,6 @@ def parseLog(request):
 
         try:
             data=line_parser(line.strip())
-            pprint(data)
-            break
         except apache_log_parser.LineDoesntMatchException:
             return HttpResponse("Formet Doesnt Match ......!")
 
@@ -55,10 +51,25 @@ def parseLog(request):
         #     db.save()
 
     cursor = connection.cursor()
-    #print "----------------------------------------"
-    #t1= time.time()
     cursor.execute(strQuery)
-    #t2=time.time()
-    #print t2-t1
-    #print "-----------------------------------"
-    return HttpResponseRedirect('/home')
+    return HttpResponseRedirect('/log/loglist')
+
+def log_list(request):
+    last_site_id = ApacheLog.objects.all().last()
+    #print last_site_id[0].site_id
+    logs = list(ApacheLog.objects.filter(site_id=last_site_id).order_by('id')[:25])
+    #site_id=logs[0]
+
+    # pagination
+    paginator = Paginator(ApacheLog.objects.all(), 20) # Show 20 logs per page
+    page = request.GET.get('page')
+    try:
+        logs = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        logs = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        logs = paginator.page(paginator.num_pages)
+
+    return render(request, 'log_list.html', {'logs':logs})
