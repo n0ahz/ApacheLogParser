@@ -3,26 +3,57 @@
 {% load crispy_forms_tags %}
 {% block body %}
 
-<div class ='col-sm-6 col-sm-offset-3 panel panel-default'>
-    <div class="panel-heading"><h1>ApacheLogParser</h1></div>
-    <div calss='panel-body'>
-        <form action="{% url 'parse' %}" method="post" enctype="multipart/form-data">{%csrf_token%}
-            {{ form |crispy}}
-            <label for="site_drop">Select Site</label>
-            <select id="site_drop" class="form-control" name="site_id">
-                {% for site in sites  %}
-                <option value="{{ site.id }}">{{ site.site_name }}</option>
-                {% endfor %}
-            </select>
-            <label for="file_up">Select Log File</label>
-            <input type="file" name="ufile" class="form-control" id="file_up">
-        </br>
-        <button type="submit" class="btn btn-primary"> Parse </button>
-    </form>
+    <div class ='col-sm-6 col-sm-offset-3 panel panel-default'>
+        <div class="panel-heading"><h1>ApacheLogParser</h1></div>
+        <div calss='panel-body'>
+            <form action="{% url 'parse' %}" method="post" enctype="multipart/form-data">{%csrf_token%}
+                {{ form |crispy}}
+                <label for="site_drop">Select Site</label>
+                <select id="site_drop" class="form-control" name="site_id">
+                    <option value="-1">---</option>
 
-</div>
-{% endblock %}
+                    {% for site in sites  %}
+                        <option value="{{ site.id }}">{{ site.site_name }}</option>
+                    {% endfor %}
+                </select>
+                <hr>
 
+                <fieldset>
+                    <legend>Select Log:</legend>
+                    <form name="myform" action="http://www.mydomain.com/myformhandler.cgi" method="POST">
+                        <div class='log-format-list' align="left">
 
+                        </div>
+                    </form>
+                </fieldset>
 
+                <label for="file_up">Select Log File</label>
+                <input type="file" name="ufile" class="form-control" id="file_up">
+                </br>
+                <button type="submit" class="btn btn-primary"> Parse </button>
+            </form>
+        </div>
 
+    </div>
+    <script>
+        $('#site_drop').on('change', function () {
+            var site_id = $(this).val();
+
+            $.get("{% url 'loadLogFormat' %}",
+                    {
+                        site_id : site_id
+                    },
+                    function(data,status){
+                        console.log(data)
+                        var btnHtml ='';
+
+                        for(var i = 0; i<data.length; i++) {
+                            btnHtml+=   '<div class="radio">'+
+                                    '<label><input type="radio" name="log_format">'+data[i].log_format+'</label>'+
+                                    '</div>';
+                        }
+                        $('.log-format-list').html(btnHtml);
+                    });
+        });
+    </script>
+{% endblock%}

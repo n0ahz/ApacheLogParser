@@ -1,6 +1,11 @@
+from django.core import serializers
+from django.core.serializers import json
+import json
 from django.shortcuts import render
 from pprint import pprint
-from .models import ApacheLog,Site
+from .models import ApacheLog
+from sites.models import Site
+
 from log_formats.models import LogFormats
 import datetime
 from django.http import HttpResponse, HttpResponseRedirect
@@ -73,3 +78,14 @@ def log_list(request):
         logs = paginator.page(paginator.num_pages)
 
     return render(request, 'log_list.html', {'logs':logs})
+
+    #t2=time.time()
+    #print t2-t1
+    #print "-----------------------------------"
+    return HttpResponseRedirect('/home')
+
+def loadLogFormat(request):
+    site_id = request.GET.get('site_id')
+    logList = LogFormats.objects.filter(site_id=site_id)
+    return HttpResponse(json.dumps(list (logList.values())), content_type="application/json")
+
