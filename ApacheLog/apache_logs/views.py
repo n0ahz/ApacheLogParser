@@ -13,10 +13,12 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection
 import apache_log_parser
 
+
 def create(request):
     siteObj = Site.objects.order_by("-id")
     siteList = list(siteObj)
     return render(request, 'upload_log.html', {'sites':siteList})
+
 
 def parseLog(request):
     logFormatId = int(request.POST.get('log_format_id'))
@@ -24,9 +26,9 @@ def parseLog(request):
     logFormat = str(log_formatObg[0].log_format)
     print logFormat
     print logFormatId
-    #% h % l % u % t \"%r\" %>s %b
-    #%h %A - - %t \"%r\" %>s %b \"%{User-Agent}i\"
-    #print logFormat
+    # % h % l % u % t \"%r\" %>s %b
+    # %h %A - - %t \"%r\" %>s %b \"%{User-Agent}i\"
+    # print logFormat
     line_parser = apache_log_parser.make_parser(""+logFormat)
 
     fileitem=request.FILES.get('ufile')
@@ -53,7 +55,7 @@ def parseLog(request):
         #     print  strQuery
         flag = False
 
-        #orm query
+        # orm query
         #     db = ApacheLog(
         #         status=data.get('status'),request_first_line=data.get('request_first_line'),
         #         response_bytes_clf=data.get('response_bytes_clf'),remote_host=data.get('remote_host'),
@@ -66,11 +68,12 @@ def parseLog(request):
     cursor.execute(strQuery)
     return HttpResponseRedirect('/log/loglist')
 
+
 def log_list(request):
     last_obj = ApacheLog.objects.order_by('-id').first()
     last_id = last_obj.format_id
 
-    #print last_site_id[0].site_id
+    # print last_site_id[0].site_id
     logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:25])
     #site_id=logs[0]
     #print logs
@@ -92,6 +95,7 @@ def log_list(request):
     #print t2-t1
     #print "-----------------------------------"
     return HttpResponseRedirect('/home')
+
 
 def loadLogFormat(request):
     site_id = request.GET.get('site_id')
