@@ -14,6 +14,7 @@ from django.db import transaction,connection
 import apache_log_parser
 
 
+
 def create(request):
     siteObj = Site.objects.order_by("-id")
     siteList = list(siteObj)
@@ -22,6 +23,7 @@ def create(request):
 
 def parseLog(request):
     logFormatId = int(request.POST.get('log_format_id'))
+    site_id = int(request.POST.get('site_id'))
     log_formatObg = LogFormats.objects.filter(id=logFormatId)
     logFormat = str(log_formatObg[0].log_format)
     print logFormat
@@ -34,7 +36,7 @@ def parseLog(request):
     fileitem=request.FILES.get('ufile')
     flag = True
     # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
-    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,request_method,format_id) VALUES "
+    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,request_method,format_id,site_id) VALUES "
     for line in fileitem.file:
         if(flag == True):
             strQuery += ' ('
@@ -48,9 +50,9 @@ def parseLog(request):
         except apache_log_parser.LineDoesntMatchException:
             return HttpResponse("Formet Doesnt Match ......!")
 
-        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received_tz_isoformat'))+'","'
+        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
-        strQuery+=str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +')'
+        strQuery+=str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
         # if(flag == True):
         #     print  strQuery
         flag = False
@@ -65,7 +67,17 @@ def parseLog(request):
         #     db.save()
 
     cursor = connection.cursor()
-    cursor.execute(strQuery)
+    try:
+        cursor.execute(strQuery)
+    except Exception, e:
+        #import pdb;pdb.set_trace()
+        #print "----------------------------------"
+        #print e.message
+        #return HttpResponse(e[1])
+        #return ugettext("jhfgkjdfgkjfdg kfghdfkjghfdg kg dfkg")
+        siteObj = Site.objects.order_by("-id")
+        siteList = list(siteObj)
+        return render(request, 'upload_log.html', {'msg': e[1],'site_id':site_id,'sites':siteList})
     return HttpResponseRedirect('/log/loglist')
 
 
@@ -74,11 +86,11 @@ def log_list(request):
     last_id = last_obj.format_id
 
     # print last_site_id[0].site_id
-    logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:25])
+    logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:30])
     #site_id=logs[0]
     #print logs
     # pagination
-    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 25) # Show 25 logs per page
+    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 30) # Show 30 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)

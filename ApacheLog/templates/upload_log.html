@@ -4,8 +4,9 @@
 {% block body %}
 
     <div class ='col-sm-6 col-sm-offset-3 panel panel-default'>
+
         <div class="panel-heading"><h1>ApacheLogParser</h1></div>
-        <div calss='panel-body'>
+        <div class='panel-body'>
             <form action="{% url 'parse' %}" method="post" enctype="multipart/form-data">{%csrf_token%}
                 {{ form |crispy}}
                 <label for="site_drop">Select Site</label>
@@ -13,15 +14,21 @@
                     <option value="-1">---</option>
 
                     {% for site in sites  %}
-                        <option value="{{ site.id }}">{{ site.site_name }}</option>
+                        {% if site_id == site.id %}
+                             <option value="{{ site.id }}" selected >{{ site.site_name }}</option>
+                        {% else %}
+                             <option value="{{ site.id }}">{{ site.site_name }}</option>
+                        {% endif %}
+
                     {% endfor %}
                 </select>
                 <hr>
 
                 <fieldset>
                     <legend>Select Log:</legend>
-                        <div class='log-format-list' align="left">
-                        </div>
+                    <h5 style="color: red;">{{ msg }}</h5>
+                    <div class='log-format-list' align="left">
+                    </div>
                 </fieldset>
 
                 <label for="file_up">Select Log File</label>
