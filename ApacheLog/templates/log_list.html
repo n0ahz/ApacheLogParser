@@ -24,15 +24,16 @@
                 </tr>
             </thead>
             <tbody>
+
             {% for ob in logs %}
                 <tr>
-                    <td data-options="field:'sn'">{{forloop.counter }}</td>
-                    <td data-options="field:'sitename'">Site Names</td>
+                    <td data-options="field:'sn'">{{ forloop.counter }}</td>
+                    <td data-options="field:'sitename'">{{ siteName }}</td>
                     <td data-options="field:'remotehost'">{{ ob.remote_host }}</td>
                     <td data-options="field:'localip'">{{ ob.local_ip }}</td>
                     <td data-options="field:'requestmethod'">{{ ob.request_method }}</td>
                     <td data-options="field:'status'">{{ ob.status }}</td>
-                    <td data-options="field:'responsetime'">Response Time(ms)</td>
+                    <td data-options="field:'responsetime'">{{ ob.time_us }}</td>
                     <td data-options="field:'size'">{{ ob.response_bytes_clf }}</td>
                     <td data-options="field:'url'">{{ ob.request_url_path }}</td>
                     <td data-options="field:'receivedtime'">{{ ob.time_received_tz_isoformat }}</td>

@@ -7,8 +7,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection
 import apache_log_parser
+import django.template.Library.filter
+from django import template
+register = template.Library()
 
-
+@register.filter(name='mlt')
+def multiply(value, arg):
+    return value*arg
 
 def create(request):
     siteObj = Site.objects.order_by("-id")
@@ -31,6 +36,7 @@ def parseLog(request):
     line_parser = apache_log_parser.make_parser(""+logFormat)
 
     fileitem=request.FILES.get('ufile')
+
     flag = True
     # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
     strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,request_method,format_id,site_id) VALUES "
@@ -44,11 +50,11 @@ def parseLog(request):
             data=line_parser(line.strip())
             #pprint(data)
             #break
-        except apache_log_parser.LineDoesntMatchException:
+        except Exception, e:
             #return HttpResponse("Formet Doesnt Match ......!")
-            return render(request, 'upload_log.html', {'msg': "Formet Doesnt Match ......!", 'site_id': site_id, 'sites': siteList})
+            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet doesnt match to uploaded file!", 'site_id': site_id, 'sites': siteList})
 
-        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))+'","'
+        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
         strQuery+=str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
         # if(flag == True):
@@ -65,21 +71,18 @@ def parseLog(request):
         #     db.save()
 
     cursor = connection.cursor()
+    #cursor.execute(strQuery)
     try:
         cursor.execute(strQuery)
     except Exception, e:
-        #import pdb;pdb.set_trace()
-        #print "----------------------------------"
-        #print e.message
-        #return HttpResponse(e[1])
-        #return ugettext("jhfgkjdfgkjfdg kfghdfkjghfdg kg dfkg")
-
         return render(request, 'upload_log.html', {'msg': e[1],'site_id':site_id,'sites':siteList})
     return HttpResponseRedirect('/log/loglist')
 
 
 def log_list(request):
     last_obj = ApacheLog.objects.order_by('-id').first()
+    if(not last_obj):
+        return render(request,'log_list.html',{})
     last_id = last_obj.format_id
 
     # print last_site_id[0].site_id
@@ -87,7 +90,7 @@ def log_list(request):
     #site_id=logs[0]
     #print logs
     # pagination
-    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 30) # Show 30 logs per page
+    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 10) # Show 30 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)
@@ -97,13 +100,9 @@ def log_list(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         logs = paginator.page(paginator.num_pages)
+    site_name = Site.objects.filter(id=logs[0].site_id)[0].site_name
+    return render(request, 'log_list.html', {'logs':logs,'siteName':site_name})
 
-    return render(request, 'log_list.html', {'logs':logs})
-
-    #t2=time.time()
-    #print t2-t1
-    #print "-----------------------------------"
-    return HttpResponseRedirect('/home')
 
 
 def loadLogFormat(request):
