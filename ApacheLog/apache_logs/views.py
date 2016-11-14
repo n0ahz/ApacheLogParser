@@ -1,13 +1,8 @@
-from django.core import serializers
-from django.core.serializers import json
 import json
 from django.shortcuts import render
-from pprint import pprint
 from .models import ApacheLog
 from sites.models import Site
-
 from log_formats.models import LogFormats
-import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection

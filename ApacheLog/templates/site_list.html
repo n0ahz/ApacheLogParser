@@ -31,27 +31,36 @@
                 </div>
             </div>
         </form>
-        <table class="table table-bordered table-striped table-hover">
-            <tr>
-                <td><strong>SN</strong></td>
-                <td><strong>Site Names</strong></td>
-                <td><strong>URL</strong></td>
-                <td><strong>Action</strong></td>
-            </tr>
 
-            {% for ob in siteList %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
                 <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td>{{ob.site_name}}</td>
-                    <td>{{ob.site_url}}</td>
-                    <td>
-                        <a href="{% url 'site_edit' ob.id %}"><button type="button" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></button></a>
-                        <a href="{% url 'site_delete' ob.id %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></a>
-                    </td>
+                    <th><strong>SN</strong></th>
+                    <th><strong>Site Names</strong></th>
+                    <th><strong>URL</strong></th>
+                    <th><strong>Action</strong></th>
                 </tr>
-            {% endfor %}
+                </thead>
 
-        </table>
+                <tbody>
+                {% for ob in siteList %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ob.site_name}}</td>
+                        <td>{{ob.site_url}}</td>
+                        <td>
+                            <a href="{% url 'site_edit' ob.id %}"><button type="button" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></button></a>
+                            <a href="{% url 'site_delete' ob.id %}"><button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+
         <div>
             <nav>
                 <ul class="pager">

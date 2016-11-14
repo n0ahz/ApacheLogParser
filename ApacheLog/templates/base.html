@@ -14,6 +14,13 @@
         .dropdown-menu{
             background-color: lightgrey;
         }
+        .navbar-inverse{
+            font-size: medium;
+        }
+        .nav.navbar-nav.navbar-right li.dropdown a.dropdown-toggle{
+            color: white;
+        }
+
     </style>
 
 </head>
@@ -26,10 +33,10 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
     </button>
-    <a href="{%  url 'home' %}" class="navbar-brand">ApacheLogParser</a>
+    <a href="{%  url 'home' %}" class="navbar-brand" style="font-size: xx-large;color: white">ApacheLogParser</a>
     <div class="collapse navbar-collapse" id="myNavbar" style="">
         <ul class="nav navbar-nav navbar-right" >
-            <li><a href="{%  url 'home' %}">Home</a></li>
+            <li><a href="{%  url 'home' %}" style="color: white"><span class="glyphicon glyphicon-home"></span> Home</a></li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Site
                     <span class="caret"></span></a>
