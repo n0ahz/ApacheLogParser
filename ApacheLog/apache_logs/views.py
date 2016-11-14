@@ -17,6 +17,8 @@ def create(request):
 
 
 def parseLog(request):
+    siteObj = Site.objects.order_by("-id")
+    siteList = list(siteObj)
     logFormatId = int(request.POST.get('log_format_id'))
     site_id = int(request.POST.get('site_id'))
     log_formatObg = LogFormats.objects.filter(id=logFormatId)
@@ -43,7 +45,8 @@ def parseLog(request):
             #pprint(data)
             #break
         except apache_log_parser.LineDoesntMatchException:
-            return HttpResponse("Formet Doesnt Match ......!")
+            #return HttpResponse("Formet Doesnt Match ......!")
+            return render(request, 'upload_log.html', {'msg': "Formet Doesnt Match ......!", 'site_id': site_id, 'sites': siteList})
 
         strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
@@ -70,8 +73,7 @@ def parseLog(request):
         #print e.message
         #return HttpResponse(e[1])
         #return ugettext("jhfgkjdfgkjfdg kfghdfkjghfdg kg dfkg")
-        siteObj = Site.objects.order_by("-id")
-        siteList = list(siteObj)
+
         return render(request, 'upload_log.html', {'msg': e[1],'site_id':site_id,'sites':siteList})
     return HttpResponseRedirect('/log/loglist')
 
