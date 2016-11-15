@@ -72,14 +72,12 @@
             <tbody>
             {% for ob in logs %}
                 <tr>
-                    <td>{{forloop.counter }}</td>
+                    <td>{{ forloop.counter0|add:logs.start_index }}</td>
                     <td>{{ ob.time_received_tz_isoformat }}</td>
                     <td>{{ ob.request_method }}</td>
                     <td>{{ ob.status }}</td>
                     <td>{{ ob.time_us }}</td>
                     <td>{{ ob.request_url_path }}</td>
-
-
                 </tr>
             {% endfor %}
             </tbody>

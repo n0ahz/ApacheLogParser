@@ -4,7 +4,7 @@
 
     <div class="container table-responsive" style="margin-top: 15px;">
         <!-- Table -->
-        <table id="dg" class="table table-bordered table-striped table-hover">
+        <table id="dg" class="table table-bordered table-hover table-responsive">
             <thead>
                 <tr>
                     <th>SN</th>
@@ -23,7 +23,7 @@
 
             {% for ob in logs %}
                 <tr>
-                    <td>{{ forloop.counter0|add:logs.start_index }}</td>
+                    <td >{{ forloop.counter0|add:logs.start_index }}</td>
                     <td>{{ siteName }}</td>
                     <td>{{ ob.remote_host }}</td>
                     <td>{{ ob.local_ip }}</td>
@@ -39,18 +39,12 @@
         </table>
 
         <style type="text/css">
-            .lines-both .datagrid-body td{
-            }
-            .lines-no .datagrid-body td{
-                border-right:1px dotted transparent;
-                border-bottom:1px dotted transparent;
-            }
-            .lines-right .datagrid-body td{
-                border-bottom:1px dotted transparent;
-            }
-            .lines-bottom .datagrid-body td{
-                border-right:1px dotted transparent;
-            }
+
+{#           table,tr,td,th{#}
+{#                text-align: center!important;#}
+{#                border:1px dotted gray !important;#}
+{#            }#}
+
         </style>
         <div>
             <nav>
