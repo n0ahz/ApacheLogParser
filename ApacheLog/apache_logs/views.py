@@ -33,7 +33,9 @@ def parseLog(request):
 
     flag = True
     # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
-    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,time_us,request_method,format_id,site_id) VALUES "
+    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz," \
+                                                              "time_received_tz_isoformat,status,response_bytes_clf,remote_host,time_us," \
+                                                              "request_method,format_id,site_id) VALUES "
     for line in fileitem.file:
         if(flag == True):
             strQuery += ' ('
@@ -48,7 +50,7 @@ def parseLog(request):
             #return HttpResponse("Formet Doesnt Match ......!")
             return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet doesnt match to uploaded file!", 'site_id': site_id, 'sites': siteList})
 
-        strQuery += '"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
+        strQuery += '"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+ str(data.get('time_received_datetimeobj')) + '","' + str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
         strQuery +=  str(data.get('time_us'))+'","'+ str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
         # if(flag == True):
@@ -96,7 +98,6 @@ def log_list(request):
         logs = paginator.page(paginator.num_pages)
     site_name = Site.objects.filter(id=logs[0].site_id)[0].site_name
     return render(request, 'log_list.html', {'logs':logs,'siteName':site_name})
-
 
 
 def loadLogFormat(request):

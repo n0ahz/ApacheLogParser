@@ -27,7 +27,7 @@ def logformat_list_page(request):
     # for search
     query = request.GET.get('q')
     if query:
-        log_list = log_list.filter(Q(site__site_name__startswith=query))
+        log_list = log_list.filter(Q(site__site_name__istartswith=query))
 
     # pagination
     paginator = Paginator(log_list, 20) # Show 30 logs per page
