@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+
+
 {% block title %}{{ title }}{% endblock %}
 {% block body %}
 
@@ -27,7 +29,7 @@
 
             {% for ob in logs %}
                 <tr>
-                    <td data-options="field:'sn'">{{ forloop.counter }}</td>
+                    <td data-options="field:'sn'">{{ 1 }}</td>
                     <td data-options="field:'sitename'">{{ siteName }}</td>
                     <td data-options="field:'remotehost'">{{ ob.remote_host }}</td>
                     <td data-options="field:'localip'">{{ ob.local_ip }}</td>

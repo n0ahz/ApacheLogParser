@@ -7,13 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection
 import apache_log_parser
-import django.template.Library.filter
-from django import template
-register = template.Library()
 
-@register.filter(name='mlt')
-def multiply(value, arg):
-    return value*arg
 
 def create(request):
     siteObj = Site.objects.order_by("-id")
@@ -39,7 +33,7 @@ def parseLog(request):
 
     flag = True
     # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
-    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,request_method,format_id,site_id) VALUES "
+    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz_isoformat,status,response_bytes_clf,remote_host,time_us,request_method,format_id,site_id) VALUES "
     for line in fileitem.file:
         if(flag == True):
             strQuery += ' ('
@@ -54,9 +48,9 @@ def parseLog(request):
             #return HttpResponse("Formet Doesnt Match ......!")
             return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet doesnt match to uploaded file!", 'site_id': site_id, 'sites': siteList})
 
-        strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
+        strQuery += '"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
-        strQuery+=str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
+        strQuery +=  str(data.get('time_us'))+'","'+ str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
         # if(flag == True):
         #     print  strQuery
         flag = False
