@@ -84,7 +84,7 @@ def log_list(request):
     #site_id=logs[0]
     #print logs
     # pagination
-    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 10) # Show 30 logs per page
+    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 30) # Show 30 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)
