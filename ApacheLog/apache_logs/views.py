@@ -48,7 +48,7 @@ def parseLog(request):
             #break
         except Exception, e:
             #return HttpResponse("Formet Doesnt Match ......!")
-            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet doesnt match to uploaded file!", 'site_id': site_id, 'sites': siteList})
+            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet!", 'site_id': site_id, 'sites': siteList})
 
         strQuery += '"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+ str(data.get('time_received_datetimeobj')) + '","' + str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
@@ -86,7 +86,7 @@ def log_list(request):
     #site_id=logs[0]
     #print logs
     # pagination
-    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 10) # Show 30 logs per page
+    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 30) # Show 30 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)
