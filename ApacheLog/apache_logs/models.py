@@ -24,6 +24,7 @@ class ApacheLog(models.Model):
     request_method = models.CharField(max_length=4,null=True)
     request_url_path = models.CharField(max_length=500,null=True)
     time_received_tz_isoformat = models.CharField(max_length=50,null=True)
+    time_us = models.CharField(max_length=50, null=True)
 
     class Meta:
         unique_together = ('site_id','local_ip','status','time_received_tz_isoformat','request_url_path','response_bytes_clf','request_method')
