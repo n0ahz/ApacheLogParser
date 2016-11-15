@@ -28,7 +28,7 @@
                     <label>Site:*</label>
                     <select name="site" class="form-control" required>
                         {% for ob in site_list %}
-                        <option value={{ ob.id }} {% if request.GET.site == site_id %}selected{% endif %}>{{ ob.site_name  }}</option>
+                        <option value="{{ ob.id }}" {% if ob.id == site_id %}selected{% endif %}>{{ ob.site_name  }}</option>
                         {% endfor %}
                     </select>
                     </div>
@@ -45,6 +45,7 @@
                 <!--code select box-->
                  <div class="col-md-2">
                  <label>Response Code:</label>
+
                 <select name="code" class="form-control">
                         {% for i in code_list %}
                             <option value={{ i }} {% if request.GET.code == i%}selected{% endif %}>{{ i }}</option>
@@ -72,7 +73,7 @@
             <tbody>
             {% for ob in logs %}
                 <tr>
-                    <td>{{forloop.counter }}</td>
+                    <td>{{ forloop.counter0|add:logs.start_index }}</td>
                     <td>{{ ob.time_received_tz_isoformat }}</td>
                     <td>{{ ob.request_method }}</td>
                     <td>{{ ob.status }}</td>

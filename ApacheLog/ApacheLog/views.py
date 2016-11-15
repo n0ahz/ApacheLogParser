@@ -12,7 +12,7 @@ def home(request):
 
 
 def report(request):
-    code_list = ['-all-', '100', '101', '102', '200', '201', '202', '203', '204', '205', '206', '207', '208', '226',
+    code_list = ['--all--', '100', '101', '102', '200', '201', '202', '203', '204', '205', '206', '207', '208', '226',
                  '300', '301', '302', '303', '304', '305', '306', '307', '308', '400', '401', '402', '403',
                  '404', '405', '406', '407', '408', '409', '410', '411', '412', '413', '414', '415', '416',
                  '417', '418', '421', '422', '423', '424', '426', '428', '429', '431', '451', '500', '501',
@@ -30,9 +30,17 @@ def report(request):
     # all parameters are not mandatory..site, from_date, to_date ei 3 ta..mark them at required in html
     if (fr <= to) and site != None:
         flag = True
-        log_list = ApacheLog.objects.filter(Q(time_received_tz__range=[fr, to]) &
-                                            Q(site_id=site)
-                                            )
+        if code != '--all--':
+            log_list = ApacheLog.objects.filter(Q(time_received_tz__range=[fr, to]) &
+                                                Q(site_id=site) &
+                                                Q(request_method__istartswith=method) &
+                                                Q(status__istartswith=code)
+                                               )
+        else:
+            log_list = ApacheLog.objects.filter(Q(time_received_tz__range=[fr, to]) &
+                                                Q(site_id=site) &
+                                                Q(request_method__istartswith=method)
+                                               )
         #import pdb; pdb.set_trace()
     download = request.GET.get('download')
 
@@ -53,7 +61,7 @@ def report(request):
         "title": "Report",
         "logs": log_list,
         "site_list": sites,
-        "site_id": site,
+        "site_id": int(site or 0),
         "code_list": code_list
     }
     return render(request, 'report.html', context)
