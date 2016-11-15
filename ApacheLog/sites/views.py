@@ -17,7 +17,7 @@ def site_add_page(request):
         "form": form,
         "title": "Add Site Info",
     }
-    return render(request, 'site_add.html', context)
+    return render(request, 'site_add_edit.html', context)
 
 
 def site_list_page(request):
@@ -51,9 +51,9 @@ def site_edit_page(request, id=None):
         return HttpResponseRedirect("/sites/list/")
     context = {
         "form": form,
-        "title": "Edit Log Format",
+        "title": "Edit Site Info",
     }
-    return render(request, 'site_add.html', context)
+    return render(request, 'site_add_edit.html', context)
 
 
 def site_delete_page(request, id=None):

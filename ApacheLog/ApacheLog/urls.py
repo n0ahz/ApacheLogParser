@@ -22,6 +22,7 @@ from views import home
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^home/$', home, name='home'),
+    url(r'^$', home, name='/'),
     url(r'^logformats/', include('log_formats.urls')),
     url(r'^sites/', include('sites.urls')),
     url(r'^log/', include('apache_logs.urls')),

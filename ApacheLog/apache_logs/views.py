@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction,connection
 import apache_log_parser
-import django.template.Library.filter
 from django import template
 register = template.Library()
 
@@ -52,7 +51,7 @@ def parseLog(request):
             #break
         except Exception, e:
             #return HttpResponse("Formet Doesnt Match ......!")
-            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet doesnt match to uploaded file!", 'site_id': site_id, 'sites': siteList})
+            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet!", 'site_id': site_id, 'sites': siteList})
 
         strQuery+='"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
         strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'

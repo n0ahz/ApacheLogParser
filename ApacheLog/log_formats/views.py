@@ -18,7 +18,7 @@ def logformat_add_page(request):
         "form": form,
         "title": "Add Log Format",
     }
-    return render(request, 'log_formats/log_format_add.html', context)
+    return render(request, 'log_formats/log_format_add_edit.html', context)
 
 
 def logformat_list_page(request):
@@ -60,7 +60,7 @@ def logformat_edit_page(request, id=None):
         "form": form,
         "title": "Edit Log Format",
     }
-    return render(request, 'log_formats/log_format_add.html', context)
+    return render(request, 'log_formats/log_format_add_edit.html', context)
 
 
 def logformat_delete_page(request, id=None):
