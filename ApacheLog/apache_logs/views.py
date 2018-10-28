@@ -27,32 +27,41 @@ def parse_log(request):
     uploaded_file = request.FILES.get('uploaded_file')
 
     parsed_log_list = []
-
+    log_lines = []
     for line in uploaded_file.file:
         try:
-            if bool(line.strip()):
-                data = line_parser(line.strip())
+            line = line.strip()
+            if bool(line) and line not in log_lines:
+                data = line_parser(line)
                 apl = ApacheLog(**data)
+                apl.full_line = line
                 apl.site_id = site_id
                 apl.log_format_id = log_format_id
                 parsed_log_list.append(apl)
+                log_lines.append(line)
         except Exception as e:
             return render(request, 'upload_log.html', {'msg': "Invalid file or Log format!", 'site_id': site_id, 'sites': site_list})
 
     try:
         from itertools import islice
-        batch_size = 100
-        while True:
-            batch = list(islice(parsed_log_list, batch_size))
+        start = 0
+        batch_size = 10
+        stop = batch_size
+        while stop <= len(parsed_log_list):
+            batch = list(islice(parsed_log_list, start, stop))
             if not batch:
                 break
             ApacheLog.objects.bulk_create(batch, batch_size)
-            if len(batch) < batch_size:
-                break
+            start = stop
+            stop += batch_size
+            if stop > len(parsed_log_list):
+                stop = len(parsed_log_list)
     except IntegrityError as ie:
-        return render(request, 'upload_log.html', {'msg': "Uniqueness failed! Most probably file uploaded before!", 'site_id': site_id, 'sites': site_list})
+        # should not happen as duplicates should be removed before..
+        print "Duplicates found!"
+        # return render(request, 'upload_log.html', {'msg': "Uniqueness failed! Most probably file uploaded before!", 'site_id': site_id, 'sites': site_list})
     except Exception, e:
-        return render(request, 'upload_log.html', {'msg': e[1], 'site_id': site_id, 'sites': site_list})
+        return render(request, 'upload_log.html', {'msg': e.message, 'site_id': site_id, 'sites': site_list})
     return HttpResponseRedirect('/log/log_list')
 
 
