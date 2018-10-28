@@ -1,15 +1,10 @@
 from django.conf.urls import url
 
-from .views import create,parseLog,log_list
-
-from .views import create,parseLog,loadLogFormat
-
-
+from .views import create, parse_log, load_log_format, log_list
 
 urlpatterns = [
-    url(r'^uploadlog/$', create, name='uploadlog'),
-    url(r'^parse/$', parseLog, name='parse'),
-    url(r'^loglist/$',log_list,name='loglist'),
-    url(r'^loadlogformat/$', loadLogFormat, name='loadLogFormat'),
-
+    url(r'^upload_log/$', create, name='upload_log'),
+    url(r'^parse/$', parse_log, name='parse_log'),
+    url(r'^log_list/$', log_list, name='log_list'),
+    url(r'^load_log_format/$', load_log_format, name='load_log_format'),
 ]

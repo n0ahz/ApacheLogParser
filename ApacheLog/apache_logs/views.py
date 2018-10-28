@@ -1,92 +1,70 @@
 import json
+from django.db import IntegrityError
 from django.shortcuts import render
 from .models import ApacheLog
 from sites.models import Site
 from log_formats.models import LogFormats
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db import transaction,connection
 import apache_log_parser
 
 
 def create(request):
-    siteObj = Site.objects.order_by("-id")
-    siteList = list(siteObj)
-    return render(request, 'upload_log.html', {'sites':siteList})
+    site_obj = Site.objects.order_by("-id")
+    site_list = list(site_obj)
+    return render(request, 'upload_log.html', {'sites': site_list})
 
 
-def parseLog(request):
-    siteObj = Site.objects.order_by("-id")
-    siteList = list(siteObj)
-    logFormatId = int(request.POST.get('log_format_id'))
+def parse_log(request):
+    site_obj = Site.objects.order_by("-id")
+    site_list = list(site_obj)
+    log_format_id = int(request.POST.get('log_format_id'))
     site_id = int(request.POST.get('site_id'))
-    log_formatObg = LogFormats.objects.filter(id=logFormatId)
-    logFormat = str(log_formatObg[0].log_format)
-    print logFormat
-    print logFormatId
-    # % h % l % u % t \"%r\" %>s %b
-    # %h %A - - %t \"%r\" %>s %b \"%{User-Agent}i\"
-    # print logFormat
-    line_parser = apache_log_parser.make_parser(""+logFormat)
+    log_format_model = LogFormats.objects.get(id=log_format_id)
+    log_format = str(log_format_model.log_format)
+    line_parser = apache_log_parser.make_parser(log_format)
 
-    fileitem=request.FILES.get('ufile')
+    uploaded_file = request.FILES.get('uploaded_file')
 
-    flag = True
-    # Insert into table (r1,r2....rn) values (v1,v2,v3...vn),(v1,v2,v3...vn),(v1,v2,v3...vn)....
-    strQuery = "INSERT INTO "+ str(ApacheLog._meta.db_table) +" (local_ip,request_url_path,time_received_tz," \
-                                                              "time_received_tz_isoformat,status,response_bytes_clf,remote_host,time_us," \
-                                                              "request_method,format_id,site_id) VALUES "
-    for line in fileitem.file:
-        if(flag == True):
-            strQuery += ' ('
-        else:
-            strQuery += ', ('
+    parsed_log_list = []
 
+    for line in uploaded_file.file:
         try:
-            data=line_parser(line.strip())
-            #pprint(data)
-            #break
-        except Exception, e:
-            #return HttpResponse("Formet Doesnt Match ......!")
-            return render(request, 'upload_log.html', {'msg': "Invalid file or Log formet!", 'site_id': site_id, 'sites': siteList})
+            if bool(line.strip()):
+                data = line_parser(line.strip())
+                apl = ApacheLog(**data)
+                apl.site_id = site_id
+                apl.log_format_id = log_format_id
+                parsed_log_list.append(apl)
+        except Exception as e:
+            return render(request, 'upload_log.html', {'msg': "Invalid file or Log format!", 'site_id': site_id, 'sites': site_list})
 
-        strQuery += '"'+str(data.get('local_ip'))+'","'+str(data.get('request_url_path'))+'","'+ str(data.get('time_received_datetimeobj')) + '","' + str(data.get('time_received'))[1:-1].replace(':',' ',1).replace('/','-')+'","'
-        strQuery +=  str(data.get('status')) + '","' + str(data.get('response_bytes_clf')) + '","' + str(data.get('remote_host')) + '","'
-        strQuery +=  str(data.get('time_us'))+'","'+ str(data.get('request_method'))+'",'+ str(log_formatObg[0].id) +','+ str(site_id) +')'
-        # if(flag == True):
-        #     print  strQuery
-        flag = False
-
-        # orm query
-        #     db = ApacheLog(
-        #         status=data.get('status'),request_first_line=data.get('request_first_line'),
-        #         response_bytes_clf=data.get('response_bytes_clf'),remote_host=data.get('remote_host'),
-        #         request_http_ver=data.get('request_http_ver'),request_url_port=data.get('request_url_port'),
-        #         remote_logname=data.get('remote_logname'),request_method=data.get('request_method')
-        #     )
-        #     db.save()
-
-    cursor = connection.cursor()
-    #cursor.execute(strQuery)
     try:
-        cursor.execute(strQuery)
+        from itertools import islice
+        batch_size = 100
+        while True:
+            batch = list(islice(parsed_log_list, batch_size))
+            if not batch:
+                break
+            ApacheLog.objects.bulk_create(batch, batch_size)
+            if len(batch) < batch_size:
+                break
+    except IntegrityError as ie:
+        return render(request, 'upload_log.html', {'msg': "Uniqueness failed! Most probably file uploaded before!", 'site_id': site_id, 'sites': site_list})
     except Exception, e:
-        return render(request, 'upload_log.html', {'msg': e[1],'site_id':site_id,'sites':siteList})
-    return HttpResponseRedirect('/log/loglist')
+        return render(request, 'upload_log.html', {'msg': e[1], 'site_id': site_id, 'sites': site_list})
+    return HttpResponseRedirect('/log/log_list')
 
 
 def log_list(request):
     last_obj = ApacheLog.objects.order_by('-id').first()
-    if(not last_obj):
-        return render(request,'log_list.html',{})
-    last_id = last_obj.format_id
+    if not last_obj:
+        return render(request, 'log_list.html', {})
 
-    # print last_site_id[0].site_id
-    logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:30])
-    #site_id=logs[0]
-    #print logs
+    # logs = list(ApacheLog.objects.filter(format_id=last_id).order_by('id')[:30])
+
     # pagination
-    paginator = Paginator(ApacheLog.objects.filter(format_id=last_id), 30) # Show 30 logs per page
+    paginator = Paginator(ApacheLog.objects.order_by('-time_second'), 30)  # Show 30 logs per page
     page = request.GET.get('page')
     try:
         logs = paginator.page(page)
@@ -96,12 +74,12 @@ def log_list(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         logs = paginator.page(paginator.num_pages)
-    site_name = Site.objects.filter(id=logs[0].site_id)[0].site_name
-    return render(request, 'log_list.html', {'logs':logs,'siteName':site_name})
+    site_name = Site.objects.filter()[0].site_name
+    return render(request, 'log_list.html', {'logs': logs, 'siteName': site_name})
 
 
-def loadLogFormat(request):
+def load_log_format(request):
     site_id = request.GET.get('site_id')
-    logList = LogFormats.objects.filter(site_id=site_id)
-    return HttpResponse(json.dumps(list (logList.values())), content_type="application/json")
+    log_list = LogFormats.objects.filter(site_id=site_id)
+    return HttpResponse(json.dumps(list(log_list.values())), content_type="application/json")
 

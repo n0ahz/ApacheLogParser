@@ -1,11 +1,11 @@
 from django.conf.urls import url
-from .views import logformat_add_page, logformat_edit_page, logformat_list_page, logformat_delete_page,set_default_logformat
+from .views import log_format_add_page, log_format_edit_page, log_format_list_page, log_format_delete_page, set_default_log_format
 
 
 urlpatterns = [
-    url(r'^add/$', logformat_add_page, name='logformat_add'),
-    url(r'^(?P<id>\d+)/edit/$', logformat_edit_page, name='logformat_edit'),
-    url(r'^list/$', logformat_list_page, name='logformat_list'),
-    url(r'^(?P<id>\d+)/delete/$', logformat_delete_page, name='logformat_delete'),
-    url(r'^(?P<id>\d+)/setdefaultlogformat/$', set_default_logformat, name='set_default_logformat'),
+    url(r'^add/$', log_format_add_page, name='log_format_add'),
+    url(r'^(?P<id>\d+)/edit/$', log_format_edit_page, name='log_format_edit'),
+    url(r'^list/$', log_format_list_page, name='log_format_list'),
+    url(r'^(?P<id>\d+)/delete/$', log_format_delete_page, name='log_format_delete'),
+    url(r'^(?P<id>\d+)/set_default_logformat/$', set_default_log_format, name='set_default_log_format'),
 ]

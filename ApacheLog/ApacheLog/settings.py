@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'ApacheLog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'logs',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'logs.db',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
@@ -132,6 +132,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 
 ]
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static")
 
 ALLOWED_HOSTS=['*']

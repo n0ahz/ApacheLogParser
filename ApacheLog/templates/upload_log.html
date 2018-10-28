@@ -7,7 +7,7 @@
 
         <div class="panel-heading"><h1>ApacheLogParser</h1></div>
         <div class='panel-body'>
-            <form action="{% url 'parse' %}" method="post" enctype="multipart/form-data">{%csrf_token%}
+            <form action="{% url 'parse_log' %}" method="post" enctype="multipart/form-data">{%csrf_token%}
                 {{ form |crispy}}
                 <label for="site_drop">Select Site</label>
                 <select id="site_drop" class="form-control" name="site_id" required>
@@ -43,7 +43,7 @@
                 </fieldset>
 
                 <label for="file_up">Select Log File</label>
-                <input type="file" name="ufile" class="form-control" id="file_up" required>
+                <input type="file" name="uploaded_file" class="form-control" id="file_up" required>
                 <h5 style="color: red;">{{ msg }}</h5>
                 </br>
                 <button type="submit" id="submit_btn" class="btn btn-primary"> Parse </button>
@@ -60,12 +60,11 @@
         });
 
         function loadLogFormat(site_id){
-            $.get("{% url 'loadLogFormat' %}",
+            $.get("{% url 'load_log_format' %}",
                     {
                         site_id : site_id
                     },
                     function(data,status){
-                        console.log(data)
                         var btnHtml ='';
 
                         $('#error_msg').addClass('hidden');

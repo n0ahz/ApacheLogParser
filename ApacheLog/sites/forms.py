@@ -12,7 +12,6 @@ class SiteForm(forms.ModelForm):
             "site_url",
         ]
         widgets = {
-            'site_name': TextInput(attrs={'placeholder': 'Site Name'}),
-            'site_url': TextInput(attrs={'placeholder': 'e.g. www.google.com'}),
-
+            'site_name': TextInput(attrs={'placeholder': 'Server Name'}),
+            'site_url': TextInput(attrs={'placeholder': 'e.g. *.prismerp.global'}),
         }

@@ -25,13 +25,13 @@ def site_list_page(request):
     site_list_all = Site.objects.order_by("-id")
     site_name = request.GET.get('site_name')
     if site_name:
-        if(site_name == 'ALL'):
+        if site_name == 'ALL':
             site_list = Site.objects.order_by('-id')
         else:
             site_list = Site.objects.filter(site_name=site_name)
 
     # pagination
-    paginator = Paginator(site_list, 20) # Show 20 logs per page
+    paginator = Paginator(site_list, 20)  # Show 20 logs per page
     page = request.GET.get('page')
     try:
         site_list = paginator.page(page)
@@ -40,7 +40,8 @@ def site_list_page(request):
         site_list = paginator.page(1)
     except EmptyPage:
         site_list = paginator.page(paginator.num_pages)
-    return render(request, 'site_list.html', {'siteList':site_list,'site_list':site_list_all,'siteName':site_name})
+    return render(request, 'site_list.html', {'siteList': site_list, 'site_list': site_list_all, 'siteName': site_name})
+
 
 def site_edit_page(request, id=None):
     detail = get_object_or_404(Site, id=id)

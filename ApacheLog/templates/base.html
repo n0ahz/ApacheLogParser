@@ -28,32 +28,32 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
     </button>
-    <a href="{%  url 'home' %}" class="navbar-brand">ApacheLogParser</a>
+    <a href="{%  url 'home' %}" class="navbar-brand"><span class="glyphicon glyphicon-print" style="color:lightblue"></span> Apache Log Report</a>
     <div class="collapse navbar-collapse" id="myNavbar" style="">
         <ul class="nav navbar-nav navbar-right" >
             <li><a href="{%  url 'home' %}">Home</a></li>
             <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Site
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Servers
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'site_add' %}">Add Site</a></li>
-                    <li><a href="{% url 'site_list' %}">List Of Sites</a></li>
+                    <li><a href="{% url 'site_add' %}">Add Server</a></li>
+                    <li><a href="{% url 'site_list' %}">List Of Servers</a></li>
                 </ul>
             </li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Log Format
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'logformat_add' %}">Add Log Format</a></li>
-                    <li><a href="{% url 'logformat_list' %}">List Log Formats</a></li>
+                    <li><a href="{% url 'log_format_add' %}">Add Log Format</a></li>
+                    <li><a href="{% url 'log_format_list' %}">List Log Formats</a></li>
                 </ul>
             </li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Logs
                     <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="{% url 'uploadlog' %}">Upload Log</a></li>
-                    <li><a href="{% url 'loglist' %}">List of Logs</a></li>
+                    <li><a href="{% url 'upload_log' %}">Upload Log</a></li>
+                    <li><a href="{% url 'log_list' %}">List of Logs</a></li>
                     <li><a href="{% url 'report' %}">Report</a></li>
                 </ul>
             </li>
