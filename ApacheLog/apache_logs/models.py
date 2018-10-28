@@ -62,14 +62,16 @@ class ApacheLog(models.Model):
     log_format = models.ForeignKey(LogFormats, on_delete=models.CASCADE, blank=True, null=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, blank=True, null=True)
 
-    class Meta:
-        unique_together = (
-            'site',
-            'log_format',
-            'remote_host',
-            'request_url',
-            'time_received_utc_isoformat',
-        )
+    # class Meta:
+    #     unique_together = (
+    #         'site',
+    #         'log_format',
+    #         'remote_host',
+    #         'request_method',
+    #         'status',
+    #         'request_url',
+    #         'time_received_utc_isoformat',
+    #     )
 
     @property
     def request_header_user_agent__browser__family(self):
